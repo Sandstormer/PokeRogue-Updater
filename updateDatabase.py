@@ -244,13 +244,13 @@ for i in range(len(output_data)):
         combined_data[-1].append(output_data[i][6]) # Generation [32]
     else:
         combined_data[-1].append(output_data[par][6])
-    combined_data[-1].extend([0,-1,0,0]) # isStartable [33], starterRow [34], starterIndex [35], specIndex[36]
-    combined_data[-1].extend([output_data[par][5],'','',-1]) # specKey [37], familyFID [38], freshStart [39], biomes [40]
+    combined_data[-1].extend(['','','','']) # isStartable [33], starterRow [34], starterIndex [35], specIndex[36]
+    combined_data[-1].extend([output_data[par][5],'','','']) # specKey [37], familyFID [38], freshStart [39], biomes [40]
     # Form exclusive [41] (if the form is only available via form change, not startable/encounterable)
     # In-game, the form is chosen from getSpeciesFormIndex in src/battle-scene.ts
     # Base species are always startable, argument 24 defaults to True (Forms are exclusive unless marked otherwise)
     if output_data[i][2] == '' or (len(output_data[i]) > 24 and 'True' in output_data[i][24]):
-        combined_data[-1].append(0)
+        combined_data[-1].append('')
     else:
         combined_data[-1].append(1)
         # print('Form Change Only:',line[5])
@@ -259,16 +259,16 @@ for i in range(len(output_data)):
     # Also, Minior core forms are selectable (which makes my biomes show up)
     for spec in ['Maushold','Dudunsparce','Sinistcha']:
         if spec in combined_data[-1][5]:
-            combined_data[-1][41] = 0 # Force certain forms to startable (not exclusive)
+            combined_data[-1][41] = '' # Force certain forms to startable (not exclusive)
     # Check for unobtainable entries (must be 'forms' listed as 'True' in output_data[i][25])
     if output_data[i][2] != '' and len(output_data[i]) > 25 and 'Revavroom' not in output_data[par][5]: 
         # Revavroom is technically onobtainable, but I still want to include it
         combined_data[-1].append(1 if 'True' in output_data[i][25] else 0) # Unobtainable [42]
     else:
         combined_data[-1].append(0)
-    combined_data[-1].append(0) # Newly added variants [43]
-    combined_data[-1].append(0) # Form type [44] (fullevo, mega, giga)
-    combined_data[-1].append(0) # Exclusive type [45] (regular, eggExc, baby, paradox, eterna, starmobile)
+    combined_data[-1].append('') # Newly added variants [43]
+    combined_data[-1].append('') # Form type [44] (fullevo, mega, giga)
+    combined_data[-1].append('') # Exclusive type [45] (regular, eggExc, baby, paradox, eterna, starmobile)
 print('Finished normalizing data')
 
 # Parse the data for starter costs ****************************
@@ -452,7 +452,7 @@ for line in combined_data: # Check for empty properties in combined_data
             print('Egg Exclusive:',line[5])
         if line[45] == 2:
             print('Baby Egg Exclusive:',line[5])
-    elif line[40] != -1 and line[40][0][0] == 'END':
+    elif line[40] != '' and line[40][0][0] == 'END':
         if 'Eternatus' in line[5]:
             # print('Eternatus:',line[5])
             line[45] = 4
@@ -461,13 +461,13 @@ for line in combined_data: # Check for empty properties in combined_data
             line[45] = 3
     if 'Starmobile' in line[5]:
         line[40] = []
-        line[41] = 0 # Not form exclusive
+        line[41] = '' # Not form exclusive
         line[45] = 5 # Just unobtainable
         print('Starmobile:',line[5])
     # if line[41] and line[45]:
     #     print('Double exclusive:',line[5])
     #     print(line[5],line[45])
-    if line[40] == -1 and line[45] == -1:
+    if line[40] == '' and line[45] == -1:
         print('Missing Biomes:',line[5])
 
 # How assigning moves is done:
@@ -628,7 +628,7 @@ for i in range(len(regionalDexNo)):
 
 # Reminder: isStartable [33], starterRow [34], starterIndex [35], specIndex[36]
 for i, line in enumerate(trimmed_data): 
-    if line[34] == -1: # Check for invalid starter row
+    if line[34] == '': # Check for invalid starter row
         throwError(f'Unassigned starter row for {line[5]}')
     # Trimmed data no longer has base species or unobtainable forms
     # So now we rebase the row numbers as specIndex[36] to be sequential
@@ -661,7 +661,8 @@ for line in trimmed_data:
     if freshThisGen == 3:
         gen = gen + 1 
         freshThisGen = 0
-    line[39] = (line[35] in freshStarterIndices)
+    if line[35] in freshStarterIndices:
+        line[39] = 1
 
 # Determine the form class [44] of each pokemon
 # 0 = not fully evolved, 1 = fully evolved, 2 = mega, 3 = giga ......................
@@ -693,7 +694,10 @@ for line in trimmed_data:
         line[23] = 1
         femlist = ['','f']
     else:
-        line[23] = 0
+        if 'Female' in line[5] or line[5] == 'Nidoran F':
+            line[23] = 2
+        else:
+            line[23] = ''
         femlist = ['']
     for fem in femlist: 
         for shiny in range(line[31]+1):
@@ -991,24 +995,29 @@ with open("local_files/patch_notes.js", "w") as file:
 input('\nContinue to writing website database?')
 print('\n==============================\n')
 print("Writing to website database...")
+
 # Write all the main data to a Javascript file *********************************************
 attributes = ['row','form','parno','dex','img','sp','desc','t1','t2','a1','a2','ha','pa',
               'bst','hp','atk','def','spa','spd','spe','catchrate','exp','mpc','fe','e1','e2','e3','e4','movedict',
-              'co','et','sh','ge']
-omitAttr = [0, 1, 2, 5, 6, 20, 21, 22, 23, 28, 33, 34, 35, 36, 37, 38]
+              'co','et','sh','ge','startable','startRow','startInd','specInd','specKey','fa',
+           #                  32      33          34         35         36        37     38
+            'fs','biomes','fx','unobtainable','nv','formClass','ex']
+           # 39     40     41        42        43      44       45
+omitAttr = [0, 1, 2, 5, 6, 20, 21, 22, 28, 33, 34, 35, 36, 37,40,42,44]
 jsdict = ['// pokedex_data.js\nconst items=[']
+
 for line in trimmed_data:
-    text = '{'
-    text = f'{text}row:{line[36]},' # Use sequential numbers as row 
-    for j in range(len(attributes)): # Write as {text}:{value}
+    text = '{' # Start the entry of that Pokemon
+    # Write all the main attributes as {text}:{value}
+    for j in range(len(attributes)): 
         if j not in omitAttr and line[j] != '':
-            if j in range(7,13):
-                if j < 9:
-                    innertext = f'type{line[j]}'
-                else:
-                    innertext = f'ability{line[j]}'
+            if j in [7,8]:
+                innertext = f'type{line[j]}'
                 text = f'{text}{attributes[j]}:{filterToFID[format_for_attr(innertext)]}'
-            elif j in range(24,28):
+            elif j in [9,10,11,12]:
+                innertext = f'ability{line[j]}'
+                text = f'{text}{attributes[j]}:{filterToFID[format_for_attr(innertext)]}'
+            elif j in [24,25,26,27]:
                 innertext = f'move{line[j]}'
                 text = f'{text}{attributes[j]}:{filterToFID[format_for_attr(innertext)]}'
             elif j == 4:
@@ -1018,6 +1027,7 @@ for line in trimmed_data:
             else:
                 text = f'{text}{attributes[j]}:"{line[j]}"' # For all others
             text = f'{text},'
+    # Write all moves as {fid}:{source}
     for key,value in line[28].items():
         innertext = f'move{key}'
         text = f'{text}{filterToFID[format_for_attr(innertext)]}:{value},'
@@ -1032,25 +1042,8 @@ for line in trimmed_data:
             text = f'{text}{filterToFID[format_for_attr(innertext)]}:{300+i}'
             if i < 12:
                 text = f'{text},'
-    if line[23]:
-        text = f'{text},fe:{line[23]}' # Female sprite filter
-    elif 'Female' in line[5] or line[5] == 'Nidoran F':
-        text = f'{text},fe:2'
-    if line[38]:
-        text = f'{text},fa:{line[38]}' # FID of family filter
-    if line[33]:
-        text = f'{text},st:1' # Starter select filter
-    if line[39]:
-        text = f'{text},fs:1' # Fresh start filter
-    if line[43]:
-        text = f'{text},nv:1' # Newly added variants
-    # Write the exclusive kind and form exclusive
-    if line[45]:
-        text = f'{text},ex:{line[45]}'
-    if line[41]:
-        text = f'{text},fx:1'
-    # The biome data is [Biome Name, fid, [code1,code2,...]]
-    # Write to js file as fid:'[code1,code2,...]'
+    # Write biome data as fid:'[code1,code2,...]'
+    # line[40] is like [Biome Name, fid, [code1,code2,...]]
     if isinstance(line[40],list):
         for biomeLine in line[40]: # Biomes
             text = f'{text},{biomeLine[1]}:['
@@ -1060,8 +1053,9 @@ for line in trimmed_data:
                     text = f'{text},'
                 else:
                     text = f'{text}]'
-    text = f'{text}}},'
+    text = f'{text}}},' # End the entry of that Pokemon
     jsdict.append(text)
+
 jsdict.append('];')
 # Open the file in write mode ('w') - this will overwrite the file if it exists
 with open("website/pokedex_data.js", "w") as file:
