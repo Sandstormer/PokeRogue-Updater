@@ -1,0 +1,8 @@
+.vscode/
+game_files/
+website/
+local_files/snapshots/
+local_files/lang_overrides/__pycache__
+notes.md
+local_images/
+*.lnk

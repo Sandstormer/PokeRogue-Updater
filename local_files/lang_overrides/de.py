@@ -1,0 +1,1 @@
+headerNames = ['Num.','Schillernd','Name','Typ','Fähigkeiten','Ei-Attacken','Kost','Ges','KP','Ang','Vert','SpA','SpV','Init']
