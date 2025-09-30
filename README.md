@@ -2,7 +2,7 @@
   <img src="https://github.com/Sandstormer/PokeRogue-Dex/raw/main/ui/bigbutton.png">
 </a>
 
-### ❌ This is <b>NOT</b> the repository for Sandstorm's [PokeRogue SearchDex](https://sandstormer.github.io/PokeRogue-Dex/), 
+### ❌ This is <b>NOT</b> the repository for [Sandstorm's PokeRogue SearchDex](https://sandstormer.github.io/PokeRogue-Dex/).
 
 ### 🔧 This repository is for the update scripts that assemble the data for that site. 
 These scripts read all the necessary data from the [game code](https://github.com/pagefaultgames/pokerogue/tree/main), process all the images, and put all the data into a compact format for my site. I run these scripts whenever there is a game update. There is no need for anyone else to run these, unless I am unable to continue the project.
