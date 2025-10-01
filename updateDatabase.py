@@ -998,12 +998,15 @@ print("Writing to website database...")
 
 # Write all the main data to a Javascript file *********************************************
 attributes = ['row','form','parno','dex','img','sp','desc','t1','t2','a1','a2','ha','pa',
+             #  0     1       2      3     4    5     6     7    8    9    10   11   12
               'bst','hp','atk','def','spa','spd','spe','catchrate','exp','mpc','fe','e1','e2','e3','e4','movedict',
+             #  13   14    15    16    17    18    19       20       21    22   23   24   25   26   27      28
               'co','et','sh','ge','startable','startRow','startInd','specInd','specKey','fa',
-           #                  32      33          34         35         36        37     38
-            'fs','biomes','fx','unobtainable','nv','formClass','ex']
-           # 39     40     41        42        43      44       45
-omitAttr = [0, 1, 2, 5, 6, 20, 21, 22, 28, 33, 34, 35, 36, 37,40,42,44]
+             # 29   30   31   32      33          34         35         36        37     38
+              'fs','biomes','fx','unobtainable','nv','formClass','ex']
+             # 39     40     41        42        43      44       45
+omitAttr = [0, 1, 2, 5, 6, 20, 21, 22, 28, 33, 34, 35, 36, 37, 40, 42, 44]
+keyText = {7:'type', 8:'type', 9:'ability', 10:'ability', 11:'ability', 12:'ability', 24:'move', 25:'move', 26:'move', 27:'move'}
 jsdict = ['// pokedex_data.js\nconst items=[']
 
 for line in trimmed_data:
@@ -1011,14 +1014,10 @@ for line in trimmed_data:
     # Write all the main attributes as {text}:{value}
     for j in range(len(attributes)): 
         if j not in omitAttr and line[j] != '':
-            if j in [7,8]:
-                innertext = f'type{line[j]}'
-                text = f'{text}{attributes[j]}:{filterToFID[format_for_attr(innertext)]}'
-            elif j in [9,10,11,12]:
-                innertext = f'ability{line[j]}'
-                text = f'{text}{attributes[j]}:{filterToFID[format_for_attr(innertext)]}'
-            elif j in [24,25,26,27]:
-                innertext = f'move{line[j]}'
+            if j in [7,8,9,10,11,12,24,25,26,27]:
+                # Types/Abilities/Moves are still listed as Names
+                # They are converted to filter ID (fid) before writing
+                innertext = f'{keyText[j]}{line[j]}'
                 text = f'{text}{attributes[j]}:{filterToFID[format_for_attr(innertext)]}'
             elif j == 4:
                 text = f'{text}{attributes[j]}:"{format_for_attr(line[j])}"' # For img path
@@ -1035,10 +1034,7 @@ for line in trimmed_data:
     # This is for the ability restriction filter to know which slot
     for i in range(7,13):
         if line[i] != '':
-            if i < 9:
-                innertext = f'type{line[i]}'
-            else:
-                innertext = f'ability{line[i]}'
+            innertext = f'{keyText[i]}{line[i]}'
             text = f'{text}{filterToFID[format_for_attr(innertext)]}:{300+i}'
             if i < 12:
                 text = f'{text},'
