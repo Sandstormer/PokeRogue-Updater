@@ -171,7 +171,7 @@ def addPartnerHeart(img): # Adds a heart image onto the partner pokemon image
     expanded_image = Image.new("RGBA", new_size, (0, 0, 0, 0))
     expanded_image.paste(img, (0, 0))
     # Open the second image to paste
-    overlay_image = Image.open("local_images/partnerheart.png")
+    overlay_image = Image.open("website/ui/partnerheart.png")
     overlay_pos = (new_size[0] - overlay_image.width, new_size[1] - overlay_image.height)
     # Create a temporary layer for blending
     temp_layer = Image.new("RGBA", expanded_image.size, (0, 0, 0, 0))  # Transparent layer
