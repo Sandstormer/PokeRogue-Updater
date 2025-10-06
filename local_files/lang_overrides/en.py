@@ -16,6 +16,18 @@ biomeLongText = [
     'This Pokemon can only be caught after obtaining <b><span style="color:rgb(239, 131, 131);">All Other Pokemon</span></b>.<br>It does not appear in standard eggs.',
     '<b>This form is unobtainable.</b>',
 ]
+warningText = [
+    'Restricted to Pokemon that have shiny variants.',
+    'Abilities are restricted to only Main Abilities.',
+    'Abilities are restricted to only Hidden Abilities.',
+    'Abilities are restricted to only Passive Abilities.',
+    '<b>There are no Pokemon that match the filters and the search term.</b><br>Adding another filter may change the results.',
+    '<b>Click on a suggestion to filter it.</b><br>Filter preview is only for Species/Types/Abilities.',
+    '<b>There are no Pokemon that match the filters and the search term.</b><br>Try a different combination.',
+    '<b>There are no Pokemon that match the filters.</b><br>Remove filters, or change the connections to "OR".',
+    '<b>There are no Pokemon or filters that match the search term.</b><br>Please check your spelling and try again.',
+    'Click to see the instructions.',
+]
 procToDesc = ["User Atk","User Def","User SpAtk","User SpDef","User Speed","User Accuracy","User Evasion", # [0-6]
     "Atk","Def","SpAtk","SpDef","Speed","Accuracy","Evasion", # [7-13]
     "Applies Poison","Applies Toxic","Applies Sleep","Applies Freeze","Applies Paralysis","Applies Burn","Applies Confuse", # [14-20]
@@ -84,18 +96,6 @@ tagToDesc = [
     "Makes Contact",
     "Partially Implemented",
     "Not Implemented",
-]
-warningText = [
-    'Restricted to Pokemon that have shiny variants.',
-    'Abilities are restricted to only Main Abilities.',
-    'Abilities are restricted to only Hidden Abilities.',
-    'Abilities are restricted to only Passive Abilities.',
-    '<b>There are no Pokemon that match the filters and the search term.</b><br>Adding another filter may change the results.',
-    '<b>Click on a suggestion to filter it.</b><br>Filter preview is only for Species/Types/Abilities.',
-    '<b>There are no Pokemon that match the filters and the search term.</b><br>Try a different combination.',
-    '<b>There are no Pokemon that match the filters.</b><br>Remove filters, or change the connections to "OR".',
-    '<b>There are no Pokemon or filters that match the search term.</b><br>Please check your spelling and try again.',
-    'Click to see the instructions.',
 ]
 helpMenuText = """
 <b>This is a <span style="color:rgb(140, 130, 240);">fast and powerful search</span> for PokeRogue</b>
