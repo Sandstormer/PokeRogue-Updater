@@ -32,6 +32,10 @@ def clone_or_update(repo_url, repo_dest, branch_name=None, only_clone=False):
                     subprocess.run(["git", "-C", repo_dest, "reset", "--hard", f"origin/{branch_name}"], check=True)
                 else:
                     subprocess.run(["git", "-C", repo_dest, "reset", "--hard", "origin/HEAD"], check=True)
+                # Clean any untracked files/directories
+                subprocess.run(["git", "-C", repo_dest, "clean", "-fdx"], check=True)
+                # Initialize and update submodules recursively, force any local changes to be discarded
+                subprocess.run(["git", "-C", repo_dest, "submodule", "update", "--init", "--recursive", "--force", "--depth", "1"], check=True)
             else:
                 # If folder exists but isn't a git repo, ask the user to delete it
                 print(f"Folder exists at {repo_dest}...")
@@ -39,20 +43,10 @@ def clone_or_update(repo_url, repo_dest, branch_name=None, only_clone=False):
     else:
         print(f"\nCloning repository into {repo_dest}...")
         if branch_name:
-            cmd = ["git", "clone", "--depth", "1", "-b", branch_name, repo_url, repo_dest]
+            cmd = ["git", "clone", "--depth", "1", "-b", branch_name, "--shallow-submodules", "--recursive", repo_url, repo_dest]
         else:
             cmd = ["git", "clone", "--depth", "1", repo_url, repo_dest]
         subprocess.run(cmd, check=True)
-
-    # TODO: pass --depth 1 --shallow-submodules to the clone command ?????????????????
-
-    # Clean any untracked files/directories
-    subprocess.run(["git", "-C", repo_dest, "clean", "-fdx"], check=True)
-
-    # Initialize and update submodules recursively, force any local changes to be discarded
-    subprocess.run(["git", "-C", repo_dest, "submodule", "update", "--init", "--recursive", "--force", "--depth", "1"], check=True)
-
-os.makedirs("./game_files", exist_ok=True) # Ensure the directory exists
 
 # Main files
 clone_or_update(
@@ -68,11 +62,11 @@ clone_or_update(
 )
 
 # Beta files
-# clone_or_update(
-#     repo_url="https://github.com/pagefaultgames/pokerogue.git",
-#     repo_dest="./game_files/beta",
-#     branch_name="beta"
-# )
+clone_or_update(
+    repo_url="https://github.com/pagefaultgames/pokerogue.git",
+    repo_dest="./game_files/beta",
+    branch_name="beta"
+)
 
 # SearchDex Website files
 clone_or_update(
